@@ -1,5 +1,7 @@
+import 'package:belanjaku/constant/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer' as devtools show log;
 
 class HalamanLogin extends StatefulWidget {
   const HalamanLogin({Key? key}) : super(key: key);
@@ -62,17 +64,23 @@ class _HalamanLoginState extends State<HalamanLogin> {
                 final userCred = await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                         email: myEmail, password: myPwd);
-                print(userCred);
+                devtools.log("Login success: ${userCred.user.toString()}");
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  mainRoute,
+                  (route) => false,
+                );
               } on FirebaseAuthException catch (e) {
-                print(e.code);
+                devtools.log("Error code: ${e.code} ${e.message}");
               }
             },
             child: const Text("Masuk"),
           ),
           TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil("/register/", (route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  registerRoute,
+                  (route) => false,
+                );
               },
               child: const Text('Belum punya akun? Daftar gratis'))
         ],

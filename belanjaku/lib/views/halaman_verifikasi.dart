@@ -1,3 +1,4 @@
+import 'package:belanjaku/constant/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,11 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
             onPressed: () async {
               final user = FirebaseAuth.instance.currentUser;
               await user?.sendEmailVerification();
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                loginRoute,
+                (_) => false,
+              );
             },
             child: const Text("Kirim verifikasi ke email"),
           ),

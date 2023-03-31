@@ -1,5 +1,7 @@
+import 'package:belanjaku/constant/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer' as devtools show log;
 
 class HalamanDaftar extends StatefulWidget {
   const HalamanDaftar({Key? key}) : super(key: key);
@@ -58,15 +60,17 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
                     .createUserWithEmailAndPassword(
                         email: myEmail, password: myPwd);
               } on FirebaseAuthException catch (e) {
-                print(e.code);
+                devtools.log('Kesalahan. Kode: ${e.code}');
               }
             },
             child: const Text("Daftar"),
           ),
           TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil("/login/", (route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  loginRoute,
+                  (route) => false,
+                );
               },
               child: const Text('Kembali ke login')),
         ],
