@@ -22,6 +22,7 @@ void main() {
       loginRoute: (context) => const HalamanLogin(),
       registerRoute: (context) => const HalamanDaftar(),
       notesRoute: (context) => const HalamanNotes(),
+      verifyEmailRoute: (context) => const HalamanVerifikasi(),
     },
   ));
 }

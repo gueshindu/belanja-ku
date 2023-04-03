@@ -1,7 +1,8 @@
 import 'package:belanjaku/constant/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer' as devtools show log;
+
+import '../utility/error_dialog.dart';
 
 class HalamanLogin extends StatefulWidget {
   const HalamanLogin({Key? key}) : super(key: key);
@@ -64,13 +65,24 @@ class _HalamanLoginState extends State<HalamanLogin> {
                 final userCred = await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                         email: myEmail, password: myPwd);
-                devtools.log("Login success: ${userCred.user.toString()}");
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  mainRoute,
-                  (route) => false,
-                );
+                if (userCred.user?.emailVerified ?? false) {
+                  //Verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    mainRoute,
+                    (route) => false,
+                  );
+                } else {
+                  //Not verified
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    verifyEmailRoute,
+                    (route) => false,
+                  );
+                }
               } on FirebaseAuthException catch (e) {
-                devtools.log("Error code: ${e.code} ${e.message}");
+                await showErrorDialog(context, e.message ?? '');
+              } catch (e) {
+                await showErrorDialog(
+                    context, 'Terjadi kesalahan fatal ${e.toString()}');
               }
             },
             child: const Text("Masuk"),

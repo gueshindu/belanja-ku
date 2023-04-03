@@ -18,7 +18,8 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
       ),
       body: Column(
         children: [
-          const Text("Vefifikasi email"),
+          const Text(
+              "Sebuah email verifikasi telah dikirim. Silahkan cek email Anda.\nJika anda belum menerima maka kirim ulang dengan menekan tombol dibawah ini"),
           TextButton(
             onPressed: () async {
               final user = FirebaseAuth.instance.currentUser;
@@ -30,6 +31,16 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
               );
             },
             child: const Text("Kirim verifikasi ke email"),
+          ),
+          TextButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                loginRoute,
+                (_) => false,
+              );
+            },
+            child: const Text("Halaman Login"),
           ),
         ],
       ),
