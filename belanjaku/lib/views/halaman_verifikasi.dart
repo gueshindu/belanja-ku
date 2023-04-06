@@ -1,5 +1,5 @@
 import 'package:belanjaku/constant/routes.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:belanjaku/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class HalamanVerifikasi extends StatefulWidget {
@@ -22,9 +22,9 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
               "Sebuah email verifikasi telah dikirim. Silahkan cek email Anda.\nJika anda belum menerima maka kirim ulang dengan menekan tombol dibawah ini"),
           TextButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              await user?.sendEmailVerification();
-              await FirebaseAuth.instance.signOut();
+              await AuthService.firebase().sentEmailVerification();
+              await AuthService.firebase().logOut();
+
               Navigator.of(context).pushNamedAndRemoveUntil(
                 loginRoute,
                 (_) => false,
@@ -34,7 +34,7 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
           ),
           TextButton(
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              await AuthService.firebase().logOut();
               Navigator.of(context).pushNamedAndRemoveUntil(
                 loginRoute,
                 (_) => false,

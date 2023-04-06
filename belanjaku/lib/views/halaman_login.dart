@@ -1,8 +1,8 @@
+import 'package:belanjaku/auth/auth_exception.dart';
 import 'package:belanjaku/constant/routes.dart';
+import 'package:belanjaku/services/auth_service.dart';
+import 'package:belanjaku/utility/error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../utility/error_dialog.dart';
 
 class HalamanLogin extends StatefulWidget {
   const HalamanLogin({Key? key}) : super(key: key);
@@ -62,10 +62,10 @@ class _HalamanLoginState extends State<HalamanLogin> {
               final myPwd = passwd.text;
 
               try {
-                final userCred = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                        email: myEmail, password: myPwd);
-                if (userCred.user?.emailVerified ?? false) {
+                await AuthService.firebase()
+                    .login(email: myEmail, passwd: myPwd);
+                final userCred = AuthService.firebase().currentUser;
+                if (userCred?.isEmailVerified ?? false) {
                   //Verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     mainRoute,
@@ -78,11 +78,12 @@ class _HalamanLoginState extends State<HalamanLogin> {
                     (route) => false,
                   );
                 }
-              } on FirebaseAuthException catch (e) {
-                await showErrorDialog(context, e.message ?? '');
-              } catch (e) {
-                await showErrorDialog(
-                    context, 'Terjadi kesalahan fatal ${e.toString()}');
+              } on UserNotFoundException {
+                await showErrorDialog(context, 'Pengguna tidak ditemukan');
+              } on WrongPasswordException {
+                await showErrorDialog(context, 'Password salah');
+              } on GenericAuthException {
+                await showErrorDialog(context, 'Terjadi kesalahan fatal');
               }
             },
             child: const Text("Masuk"),

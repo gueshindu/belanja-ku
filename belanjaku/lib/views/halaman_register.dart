@@ -1,7 +1,8 @@
+import 'package:belanjaku/auth/auth_exception.dart';
 import 'package:belanjaku/constant/routes.dart';
+import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/utility/error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class HalamanDaftar extends StatefulWidget {
   const HalamanDaftar({Key? key}) : super(key: key);
@@ -61,18 +62,21 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
               }
 
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: myEmail, password: myPwd);
+                await AuthService.firebase()
+                    .createUser(email: myEmail, passwd: myPwd);
 
-                final user = FirebaseAuth.instance.currentUser;
-                user?.sendEmailVerification();
+                await AuthService.firebase().sentEmailVerification();
 
                 Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on FirebaseAuthException catch (e) {
-                await showErrorDialog(context, e.message ?? '');
-              } catch (e) {
+              } on WeakPasswordException {
+                await showErrorDialog(context, 'Password lemah');
+              } on EmailAlreadyExistException {
+                await showErrorDialog(context, 'Email sudah terdaftar');
+              } on InvalidEmailException {
+                await showErrorDialog(context, 'Email tidak valid');
+              } on GenericAuthException {
                 await showErrorDialog(
-                    context, 'Terjadi kesalahan fatal ${e.toString()}');
+                    context, 'Terjadi kesalahan dalam pendaftaran');
               }
             },
             child: const Text("Daftar"),

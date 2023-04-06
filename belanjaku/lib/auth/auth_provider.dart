@@ -1,6 +1,7 @@
-import 'package:belanjaku/services/auth/auth_user.dart';
+import 'auth_user.dart';
 
 abstract class AuthProvider {
+  Future initialize();
   AuthUser? get currentUser;
   Future<AuthUser> login({
     required String email,

@@ -1,7 +1,10 @@
-import 'package:belanjaku/services/auth/auth_exception.dart';
-import 'package:belanjaku/services/auth/auth_provider.dart';
-import 'package:belanjaku/services/auth/auth_user.dart';
+import 'package:belanjaku/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'auth_exception.dart';
+import 'auth_provider.dart';
+import 'auth_user.dart';
 
 class AuthFirebaseProvider implements AuthProvider {
   @override
@@ -81,5 +84,12 @@ class AuthFirebaseProvider implements AuthProvider {
     } else {
       throw UserNotLoginException();
     }
+  }
+
+  @override
+  Future initialize() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 }

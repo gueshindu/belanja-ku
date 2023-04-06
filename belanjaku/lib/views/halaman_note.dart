@@ -1,9 +1,8 @@
 import 'package:belanjaku/constant/routes.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:belanjaku/enums/menu_action.dart';
+import 'package:belanjaku/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
-
-enum MenuAction { logout }
 
 class HalamanNotes extends StatefulWidget {
   const HalamanNotes({Key? key}) : super(key: key);
@@ -26,7 +25,8 @@ class _HalamanNotesState extends State<HalamanNotes> {
                 final shouldLogout = await logOutAlert(context);
                 if (shouldLogout) {
                   devtools.log('User logout');
-                  await FirebaseAuth.instance.signOut();
+
+                  await AuthService.firebase().logOut();
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     loginRoute,
                     (_) => false,

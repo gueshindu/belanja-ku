@@ -1,10 +1,13 @@
-import 'package:belanjaku/services/auth/auth_provider.dart';
-import 'package:belanjaku/services/auth/auth_user.dart';
+import 'package:belanjaku/auth/auth_firebase.dart';
+import 'package:belanjaku/auth/auth_provider.dart';
+import 'package:belanjaku/auth/auth_user.dart';
 
 class AuthService implements AuthProvider {
   final AuthProvider provider;
 
   const AuthService(this.provider);
+
+  factory AuthService.firebase() => AuthService(AuthFirebaseProvider());
 
   @override
   Future<AuthUser> createUser({required String email, required passwd}) =>
@@ -21,4 +24,7 @@ class AuthService implements AuthProvider {
 
   @override
   Future sentEmailVerification() => provider.sentEmailVerification();
+
+  @override
+  Future initialize() => provider.initialize();
 }
