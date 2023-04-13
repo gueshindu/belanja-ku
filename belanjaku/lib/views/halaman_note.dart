@@ -1,6 +1,7 @@
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/enums/menu_action.dart';
 import 'package:belanjaku/services/auth_service.dart';
+import 'package:belanjaku/services/notes_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
@@ -12,6 +13,21 @@ class HalamanNotes extends StatefulWidget {
 }
 
 class _HalamanNotesState extends State<HalamanNotes> {
+  String get userEmail => AuthService.firebase().currentUser!.userEmail!;
+  late final NotesService _notesService;
+
+  @override
+  void initState() {
+    _notesService = NotesService();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +59,27 @@ class _HalamanNotesState extends State<HalamanNotes> {
             ];
           }),
         ],
+      ),
+      body: FutureBuilder(
+        future: _notesService.getOrCrateUser(email: userEmail),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return StreamBuilder(
+                stream: _notesService.allNotes,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Text('Menunggu data...');
+                    default:
+                      return const CircularProgressIndicator();
+                  }
+                },
+              );
+            default:
+              return const CircularProgressIndicator();
+          }
+        },
       ),
     );
   }
