@@ -10,4 +10,9 @@ class AuthUser {
 
   factory AuthUser.fromFirebase(FirebaseAuth.User user) =>
       AuthUser(userEmail: user.email, isEmailVerified: user.emailVerified);
+
+  @override
+  String toString() {
+    return "User data. Email: $userEmail}";
+  }
 }

@@ -1,11 +1,11 @@
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/views/halaman_login.dart';
-import 'package:belanjaku/views/halaman_note.dart';
+import 'package:belanjaku/views/notes/halaman_note.dart';
 import 'package:belanjaku/views/halaman_register.dart';
 import 'package:belanjaku/views/halaman_verifikasi.dart';
+import 'package:belanjaku/views/notes/note_baru.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +21,7 @@ void main() {
       registerRoute: (context) => const HalamanDaftar(),
       notesRoute: (context) => const HalamanNotes(),
       verifyEmailRoute: (context) => const HalamanVerifikasi(),
+      newNotesRoute: (context) => const NewNotesView(),
     },
   ));
 }
@@ -38,14 +39,13 @@ class HalamanUtama extends StatelessWidget {
             final user = AuthService.firebase().currentUser;
             if (user != null) {
               if (user.isEmailVerified) {
-                devtools.log("Logged & verified");
+                writeLog("Logged & verified");
               } else {
                 return const HalamanVerifikasi();
               }
             } else {
               return const HalamanLogin();
             }
-
             return const HalamanNotes();
           default:
             return const CircularProgressIndicator();

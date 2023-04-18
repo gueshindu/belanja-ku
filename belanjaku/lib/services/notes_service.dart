@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:belanjaku/auth/auth_exception.dart';
+import 'package:belanjaku/constant/routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,6 +42,7 @@ class NotesService {
       return user;
     } on UserNotFoundException {
       final createdUser = await createUser(email: email);
+      writeLog("User created: $email");
       return createdUser;
     } catch (e) {
       rethrow;
@@ -80,7 +82,10 @@ class NotesService {
       whereArgs: [email.toLowerCase()],
     );
 
-    if (result.isEmpty) throw DBUserNotExist();
+    if (result.isEmpty) {
+      writeLog("User with email $email not found");
+      throw UserNotFoundException();
+    }
 
     return DatabaseUser.fromRow(result.first);
   }
@@ -213,6 +218,7 @@ class NotesService {
 
   Future open() async {
     if (_db != null) {
+      //writeLog('Database already open. ${_db.toString()}');
       throw DBAlreadyOpenException();
     }
     try {
@@ -226,6 +232,7 @@ class NotesService {
       await db.execute(createNoteScript);
       await _cacheNotes();
     } on MissingPlatformDirectoryException {
+      writeLog('Fail to open database');
       throw DBUnableOpen();
     }
   }

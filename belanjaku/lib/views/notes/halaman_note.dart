@@ -3,7 +3,6 @@ import 'package:belanjaku/enums/menu_action.dart';
 import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/services/notes_service.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 class HalamanNotes extends StatefulWidget {
   const HalamanNotes({Key? key}) : super(key: key);
@@ -32,15 +31,21 @@ class _HalamanNotesState extends State<HalamanNotes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Belanja Ku'),
+        title: const Text('Notes'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(newNotesRoute);
+            },
+            icon: const Icon(Icons.add),
+          ),
           PopupMenuButton<MenuAction>(onSelected: (value) async {
-            devtools.log(value.toString());
+            writeLog(value.toString());
             switch (value) {
               case MenuAction.logout:
                 final shouldLogout = await logOutAlert(context);
                 if (shouldLogout) {
-                  devtools.log('User logout');
+                  writeLog('User logout');
 
                   await AuthService.firebase().logOut();
                   Navigator.of(context).pushNamedAndRemoveUntil(
@@ -70,6 +75,7 @@ class _HalamanNotesState extends State<HalamanNotes> {
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
+                    case ConnectionState.active:
                       return const Text('Menunggu data...');
                     default:
                       return const CircularProgressIndicator();
