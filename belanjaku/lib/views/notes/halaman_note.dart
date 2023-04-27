@@ -2,6 +2,8 @@ import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/enums/menu_action.dart';
 import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/services/notes_service.dart';
+import 'package:belanjaku/utility/dialog/logout_dialog.dart';
+import 'package:belanjaku/views/notes/note_list.dart';
 import 'package:flutter/material.dart';
 
 class HalamanNotes extends StatefulWidget {
@@ -21,11 +23,13 @@ class _HalamanNotesState extends State<HalamanNotes> {
     super.initState();
   }
 
+/*
   @override
   void dispose() {
     _notesService.close();
     super.dispose();
   }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +47,7 @@ class _HalamanNotesState extends State<HalamanNotes> {
             writeLog(value.toString());
             switch (value) {
               case MenuAction.logout:
-                final shouldLogout = await logOutAlert(context);
+                final shouldLogout = await showLogoutDialog(context);
                 if (shouldLogout) {
                   writeLog('User logout');
 
@@ -76,7 +80,19 @@ class _HalamanNotesState extends State<HalamanNotes> {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return const Text('Menunggu data...');
+                      if (snapshot.hasData) {
+                        final notes = snapshot.data as List<DatabaseNotes>;
+                        writeLog(notes.toString());
+                        return NoteListView(
+                          notes: notes,
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(id: note.id);
+                          },
+                        );
+                      } else {
+                        return const Text('Menunggu data...');
+                      }
+
                     default:
                       return const CircularProgressIndicator();
                   }
@@ -89,30 +105,4 @@ class _HalamanNotesState extends State<HalamanNotes> {
       ),
     );
   }
-}
-
-Future<bool> logOutAlert(BuildContext context) {
-  return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Yakin akan melakukan sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Batal'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Ya'),
-          ),
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }

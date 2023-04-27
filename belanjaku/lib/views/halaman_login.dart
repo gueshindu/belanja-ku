@@ -1,7 +1,7 @@
 import 'package:belanjaku/auth/auth_exception.dart';
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/services/auth_service.dart';
-import 'package:belanjaku/utility/error_dialog.dart';
+import 'package:belanjaku/utility/dialog/error_dialog.dart';
 import 'package:flutter/material.dart';
 
 class HalamanLogin extends StatefulWidget {

@@ -13,14 +13,21 @@ import 'notes_service_exception.dart';
 class NotesService {
   //Singleton
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamCtrl =
+        StreamController<List<DatabaseNotes>>.broadcast(onListen: () {
+      _notesStreamCtrl.sink.add(_notes);
+    });
+  }
+
   factory NotesService() => _shared;
 
   Database? _db;
 
   List<DatabaseNotes> _notes = [];
 
-  final _notesStreamCtrl = StreamController<List<DatabaseNotes>>.broadcast();
+  late final StreamController<List<DatabaseNotes>>
+      _notesStreamCtrl; //  = StreamController<List<DatabaseNotes>>.broadcast();
 
   Stream<List<DatabaseNotes>> get allNotes => _notesStreamCtrl.stream;
 
