@@ -15,3 +15,5 @@ class DBNoteNotExist implements Exception {}
 class DBDeleteNoteFail implements Exception {}
 
 class DBFailUpdateNoteFail implements Exception {}
+
+class DBUserNotSet implements Exception {}

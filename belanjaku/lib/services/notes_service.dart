@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:belanjaku/auth/auth_exception.dart';
 import 'package:belanjaku/constant/routes.dart';
+import 'package:belanjaku/extension/list_filter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,13 +24,23 @@ class NotesService {
   factory NotesService() => _shared;
 
   Database? _db;
+  DatabaseUser? _curUser; //Save current user data
 
   List<DatabaseNotes> _notes = [];
 
   late final StreamController<List<DatabaseNotes>>
       _notesStreamCtrl; //  = StreamController<List<DatabaseNotes>>.broadcast();
 
-  Stream<List<DatabaseNotes>> get allNotes => _notesStreamCtrl.stream;
+  Stream<List<DatabaseNotes>> get allNotes => _notesStreamCtrl.stream.filter(
+        (note) {
+          final curUser = _curUser;
+          if (curUser != null) {
+            return note.userId == curUser.id;
+          } else {
+            throw DBUserNotSet();
+          }
+        },
+      );
 
   Future _cacheNotes() async {
     final allNotes = await getAllNotes();
@@ -43,12 +54,15 @@ class NotesService {
     return db;
   }
 
-  Future<DatabaseUser> getOrCrateUser({required String email}) async {
+  Future<DatabaseUser> getOrCrateUser(
+      {required String email, bool setAsCurUser = true}) async {
     try {
       final user = await getUser(email: email);
+      if (setAsCurUser) _curUser = user;
       return user;
     } on UserNotFoundException {
       final createdUser = await createUser(email: email);
+      if (setAsCurUser) _curUser = createdUser;
       writeLog("User created: $email");
       return createdUser;
     } catch (e) {
@@ -172,10 +186,15 @@ class NotesService {
     await getNotes(id: note.id);
 
     //Update to db
-    final result = await db.update(tblNote, {
-      colText: newText,
-      colIsSync: 0,
-    });
+    final result = await db.update(
+      tblNote,
+      {
+        colText: newText,
+        colIsSync: 0,
+      },
+      where: 'id = ?',
+      whereArgs: [note.id],
+    );
 
     if (result == 0) throw DBFailUpdateNoteFail();
     final updateNote = await getNotes(id: note.id);
@@ -300,7 +319,7 @@ class DatabaseNotes {
 
   @override
   String toString() {
-    return "Note id: $id, User id: $userId [Sync = $isSync]";
+    return "Note id: $id, User id: $userId, Text: $text, Sync = $isSync";
   }
 
   @override

@@ -2,7 +2,7 @@ import 'package:belanjaku/services/notes_service.dart';
 import 'package:belanjaku/utility/dialog/delete_dialog.dart';
 import 'package:flutter/material.dart';
 
-typedef DeleteNoteCallback = void Function(DatabaseNotes note);
+typedef NoteCallback = void Function(DatabaseNotes note);
 
 class NoteListView extends StatelessWidget {
   final List<DatabaseNotes> notes;
@@ -10,9 +10,11 @@ class NoteListView extends StatelessWidget {
     Key? key,
     required this.notes,
     required this.onDeleteNote,
+    required this.onTapNote,
   }) : super(key: key);
 
-  final DeleteNoteCallback onDeleteNote;
+  final NoteCallback onDeleteNote;
+  final NoteCallback onTapNote;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,9 @@ class NoteListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final curNote = notes[index];
         return ListTile(
+          onTap: () {
+            onTapNote(curNote);
+          },
           title: Text(
             curNote.text,
             maxLines: 1,

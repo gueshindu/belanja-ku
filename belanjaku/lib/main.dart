@@ -4,7 +4,7 @@ import 'package:belanjaku/views/halaman_login.dart';
 import 'package:belanjaku/views/notes/halaman_note.dart';
 import 'package:belanjaku/views/halaman_register.dart';
 import 'package:belanjaku/views/halaman_verifikasi.dart';
-import 'package:belanjaku/views/notes/note_baru.dart';
+import 'package:belanjaku/views/notes/halaman_note_edit_baru.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,7 +21,7 @@ void main() {
       registerRoute: (context) => const HalamanDaftar(),
       notesRoute: (context) => const HalamanNotes(),
       verifyEmailRoute: (context) => const HalamanVerifikasi(),
-      newNotesRoute: (context) => const NewNotesView(),
+      createOrUpdateRoute: (context) => const HalamanNewUpdate(),
     },
   ));
 }

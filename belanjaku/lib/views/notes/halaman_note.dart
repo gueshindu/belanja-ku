@@ -39,7 +39,7 @@ class _HalamanNotesState extends State<HalamanNotes> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(newNotesRoute);
+              Navigator.of(context).pushNamed(createOrUpdateRoute);
             },
             icon: const Icon(Icons.add),
           ),
@@ -82,11 +82,18 @@ class _HalamanNotesState extends State<HalamanNotes> {
                     case ConnectionState.active:
                       if (snapshot.hasData) {
                         final notes = snapshot.data as List<DatabaseNotes>;
-                        writeLog(notes.toString());
+                        writeLog("List notes: ${notes.toString()}");
                         return NoteListView(
                           notes: notes,
                           onDeleteNote: (note) async {
+                            writeLog("Note to delete: ${note.text} ");
                             await _notesService.deleteNote(id: note.id);
+                          },
+                          onTapNote: (note) {
+                            Navigator.of(context).pushNamed(
+                              createOrUpdateRoute,
+                              arguments: note,
+                            );
                           },
                         );
                       } else {
