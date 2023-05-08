@@ -1,7 +1,10 @@
 import 'package:belanjaku/services/auth_service.dart';
-import 'package:belanjaku/services/notes_service.dart';
+import 'package:belanjaku/services/cloud/cloud_note.dart';
+import 'package:belanjaku/services/cloud/firebase_cloud_storage.dart';
+import 'package:belanjaku/utility/dialog/cannot_share.dart';
 import 'package:belanjaku/utility/generics/get_argument.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HalamanNewUpdate extends StatefulWidget {
   const HalamanNewUpdate({Key? key}) : super(key: key);
@@ -11,13 +14,13 @@ class HalamanNewUpdate extends StatefulWidget {
 }
 
 class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
-  DatabaseNotes? _note;
-  late final NotesService _service;
+  CloudNote? _note;
+  late final FireBaseCloudStorage _service;
   late final TextEditingController _txtController;
 
   @override
   void initState() {
-    _service = NotesService();
+    _service = FireBaseCloudStorage();
     _txtController = TextEditingController();
     super.initState();
   }
@@ -29,7 +32,7 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
     }
 
     final txt = _txtController.text;
-    await _service.updateNote(note: note, newText: txt);
+    await _service.updateNote(docId: note.documentId, txt: txt);
   }
 
   void _setupListener() {
@@ -37,8 +40,8 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
     _txtController.addListener(_textCtrlListener);
   }
 
-  Future<DatabaseNotes> createOrGetExistingNote(BuildContext ctx) async {
-    final widgetNote = ctx.getArgument<DatabaseNotes>();
+  Future<CloudNote> createOrGetExistingNote(BuildContext ctx) async {
+    final widgetNote = ctx.getArgument<CloudNote>();
     if (widgetNote != null) {
       _note = widgetNote;
       _txtController.text = widgetNote.text;
@@ -50,10 +53,7 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
       return curNote;
     }
     final curUser = AuthService.firebase().currentUser!;
-    final email = curUser.userEmail!;
-    final owner = await _service.getUser(email: email);
-
-    final newNote = await _service.createNotes(creator: owner);
+    final newNote = await _service.createNewNote(ownerId: curUser.id);
     _note = newNote;
     return newNote;
   }
@@ -61,7 +61,7 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
   void _deleteEmptyNote() {
     final note = _note;
     if (_txtController.text.isEmpty && note != null) {
-      _service.deleteNote(id: note.id);
+      _service.deleteNote(docId: note.documentId);
     }
   }
 
@@ -69,7 +69,7 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
     final note = _note;
     final txt = _txtController.text;
     if (note != null && txt.isNotEmpty) {
-      await _service.updateNote(note: note, newText: txt);
+      await _service.updateNote(docId: note.documentId, txt: txt);
     }
   }
 
@@ -86,6 +86,21 @@ class _HalamanNewUpdateState extends State<HalamanNewUpdate> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Note Baru"),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final txt = _txtController.text;
+              if (_note == null || txt.isEmpty) {
+                tdkBisaShareDialog(context);
+              } else {
+                Share.share(txt);
+              }
+            },
+            icon: const Icon(
+              Icons.share,
+            ),
+          )
+        ],
       ),
       body: FutureBuilder(
         future: createOrGetExistingNote(context),

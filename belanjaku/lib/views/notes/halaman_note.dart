@@ -1,7 +1,8 @@
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/enums/menu_action.dart';
 import 'package:belanjaku/services/auth_service.dart';
-import 'package:belanjaku/services/notes_service.dart';
+import 'package:belanjaku/services/cloud/cloud_note.dart';
+import 'package:belanjaku/services/cloud/firebase_cloud_storage.dart';
 import 'package:belanjaku/utility/dialog/logout_dialog.dart';
 import 'package:belanjaku/views/notes/note_list.dart';
 import 'package:flutter/material.dart';
@@ -14,22 +15,14 @@ class HalamanNotes extends StatefulWidget {
 }
 
 class _HalamanNotesState extends State<HalamanNotes> {
-  String get userEmail => AuthService.firebase().currentUser!.userEmail!;
-  late final NotesService _notesService;
+  late final FireBaseCloudStorage _notesService;
+  String get userId => AuthService.firebase().currentUser!.id;
 
   @override
   void initState() {
-    _notesService = NotesService();
+    _notesService = FireBaseCloudStorage();
     super.initState();
   }
-
-/*
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
@@ -69,42 +62,32 @@ class _HalamanNotesState extends State<HalamanNotes> {
           }),
         ],
       ),
-      body: FutureBuilder(
-        future: _notesService.getOrCrateUser(email: userEmail),
+      body: StreamBuilder(
+        stream: _notesService.allNotes(ownerId: userId),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return StreamBuilder(
-                stream: _notesService.allNotes,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (snapshot.hasData) {
-                        final notes = snapshot.data as List<DatabaseNotes>;
-                        writeLog("List notes: ${notes.toString()}");
-                        return NoteListView(
-                          notes: notes,
-                          onDeleteNote: (note) async {
-                            writeLog("Note to delete: ${note.text} ");
-                            await _notesService.deleteNote(id: note.id);
-                          },
-                          onTapNote: (note) {
-                            Navigator.of(context).pushNamed(
-                              createOrUpdateRoute,
-                              arguments: note,
-                            );
-                          },
-                        );
-                      } else {
-                        return const Text('Menunggu data...');
-                      }
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (snapshot.hasData) {
+                final notes = snapshot.data as Iterable<CloudNote>;
+                writeLog("List notes: ${notes.toString()}");
+                return NoteListView(
+                  notes: notes,
+                  onDeleteNote: (note) async {
+                    writeLog("Note to delete: ${note.text} ");
+                    await _notesService.deleteNote(docId: note.documentId);
+                  },
+                  onTapNote: (note) {
+                    Navigator.of(context).pushNamed(
+                      createOrUpdateRoute,
+                      arguments: note,
+                    );
+                  },
+                );
+              } else {
+                return const Text('Menunggu data...');
+              }
 
-                    default:
-                      return const CircularProgressIndicator();
-                  }
-                },
-              );
             default:
               return const CircularProgressIndicator();
           }

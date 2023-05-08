@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:belanjaku/auth/auth_exception.dart';
 import 'package:belanjaku/constant/routes.dart';
@@ -20,7 +20,6 @@ class NotesService {
       _notesStreamCtrl.sink.add(_notes);
     });
   }
-
   factory NotesService() => _shared;
 
   Database? _db;
@@ -356,3 +355,4 @@ const createNoteScript = '''
         PRIMARY KEY ("$colID" AUTOINCREMENT)
       );
       ''';
+ */

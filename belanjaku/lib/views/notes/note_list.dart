@@ -1,11 +1,11 @@
-import 'package:belanjaku/services/notes_service.dart';
+import 'package:belanjaku/services/cloud/cloud_note.dart';
 import 'package:belanjaku/utility/dialog/delete_dialog.dart';
 import 'package:flutter/material.dart';
 
-typedef NoteCallback = void Function(DatabaseNotes note);
+typedef NoteCallback = void Function(CloudNote note);
 
 class NoteListView extends StatelessWidget {
-  final List<DatabaseNotes> notes;
+  final Iterable<CloudNote> notes;
   const NoteListView({
     Key? key,
     required this.notes,
@@ -21,7 +21,7 @@ class NoteListView extends StatelessWidget {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
-        final curNote = notes[index];
+        final curNote = notes.elementAt(index);
         return ListTile(
           onTap: () {
             onTapNote(curNote);

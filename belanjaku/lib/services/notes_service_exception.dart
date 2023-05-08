@@ -1,4 +1,4 @@
-class DBAlreadyOpenException implements Exception {}
+/* class DBAlreadyOpenException implements Exception {}
 
 class DBUnableOpen implements Exception {}
 
@@ -17,3 +17,4 @@ class DBDeleteNoteFail implements Exception {}
 class DBFailUpdateNoteFail implements Exception {}
 
 class DBUserNotSet implements Exception {}
+ */
