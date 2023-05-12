@@ -1,6 +1,9 @@
+import 'package:belanjaku/bloc/auth/auth_bloc.dart';
+import 'package:belanjaku/bloc/auth/auth_event.dart';
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HalamanVerifikasi extends StatefulWidget {
   const HalamanVerifikasi({Key? key}) : super(key: key);
@@ -21,24 +24,14 @@ class _HalamanVerifikasiState extends State<HalamanVerifikasi> {
           const Text(
               "Sebuah email verifikasi telah dikirim. Silahkan cek email Anda.\nJika anda belum menerima maka kirim ulang dengan menekan tombol dibawah ini"),
           TextButton(
-            onPressed: () async {
-              await AuthService.firebase().sentEmailVerification();
-              await AuthService.firebase().logOut();
-
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                loginRoute,
-                (_) => false,
-              );
+            onPressed: ()   {
+              context.read<AuthBloc>().add(const AuthEventSendEmailVerification());
             },
             child: const Text("Kirim verifikasi ke email"),
           ),
           TextButton(
-            onPressed: () async {
-              await AuthService.firebase().logOut();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                loginRoute,
-                (_) => false,
-              );
+            onPressed: ()  {
+              context.read<AuthBloc>().add(const AuthEventLogout());
             },
             child: const Text("Halaman Login"),
           ),

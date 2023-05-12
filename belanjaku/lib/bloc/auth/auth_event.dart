@@ -10,8 +10,7 @@ class AuthEventInit extends AuthEvent {
 }
 
 class AuthEventLogin extends AuthEvent {
-  final String email;
-  final String pwd;
+  final String email, pwd;
 
   const AuthEventLogin(this.email, this.pwd);
 }
@@ -19,3 +18,17 @@ class AuthEventLogin extends AuthEvent {
 class AuthEventLogout extends AuthEvent {
   const AuthEventLogout();
 }
+
+class AuthEventSendEmailVerification extends AuthEvent {
+  const AuthEventSendEmailVerification();
+}
+
+class AuthEventRegister extends AuthEvent {
+  final String email, pwd;
+  const AuthEventRegister(this.email, this.pwd);
+}
+
+class AuthEventShouldRegister extends AuthEvent {
+  const AuthEventShouldRegister();
+}
+

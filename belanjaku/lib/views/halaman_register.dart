@@ -1,8 +1,10 @@
 import 'package:belanjaku/auth/auth_exception.dart';
-import 'package:belanjaku/constant/routes.dart';
-import 'package:belanjaku/services/auth_service.dart';
+import 'package:belanjaku/bloc/auth/auth_bloc.dart';
+import 'package:belanjaku/bloc/auth/auth_event.dart';
+import 'package:belanjaku/bloc/auth/auth_state.dart';
 import 'package:belanjaku/utility/dialog/error_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HalamanDaftar extends StatefulWidget {
   const HalamanDaftar({Key? key}) : super(key: key);
@@ -31,65 +33,57 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Daftar Pengguna Baru"),
-      ),
-      body: Column(
-        children: [
-          TextField(
-            keyboardType: TextInputType.emailAddress,
-            autocorrect: false,
-            enableSuggestions: true,
-            decoration: const InputDecoration(hintText: 'Masukkan email Anda'),
-            controller: email,
-          ),
-          TextField(
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Password Aplikasi'),
-            controller: passwd,
-          ),
-          TextButton(
-            onPressed: () async {
-              final myEmail = email.text;
-              final myPwd = passwd.text;
-
-              if (myEmail.isEmpty) {
-                showErrorDialog(context, 'Email belum diisikan');
-                return;
-              }
-
-              try {
-                await AuthService.firebase()
-                    .createUser(email: myEmail, passwd: myPwd);
-
-                await AuthService.firebase().sentEmailVerification();
-
-                Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on WeakPasswordException {
-                await showErrorDialog(context, 'Password lemah');
-              } on EmailAlreadyExistException {
-                await showErrorDialog(context, 'Email sudah terdaftar');
-              } on InvalidEmailException {
-                await showErrorDialog(context, 'Email tidak valid');
-              } on GenericAuthException {
-                await showErrorDialog(
-                    context, 'Terjadi kesalahan dalam pendaftaran');
-              }
-            },
-            child: const Text("Daftar"),
-          ),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  loginRoute,
-                  (route) => false,
-                );
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateRegistering) {
+          if (state.exception is WeakPasswordException) {
+            await showErrorDialog(context, 'Password lemah');
+          } else if (state.exception is EmailAlreadyExistException) {
+            await showErrorDialog(context, 'Email sudah terdaftar');
+          } else if (state.exception is InvalidEmailException) {
+            await showErrorDialog(context, 'Email tidak valid');
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(
+                context, 'Terjadi kesalahan dalam pendaftaran');
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Daftar Pengguna Baru"),
+        ),
+        body: Column(
+          children: [
+            TextField(
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
+              enableSuggestions: true,
+              decoration:
+                  const InputDecoration(hintText: 'Masukkan email Anda'),
+              controller: email,
+            ),
+            TextField(
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(hintText: 'Password Aplikasi'),
+              controller: passwd,
+            ),
+            TextButton(
+              onPressed: () async {
+                final eml = email.text;
+                final pwd = passwd.text;
+                context.read<AuthBloc>().add(AuthEventRegister(eml, pwd));
               },
-              child: const Text('Kembali ke login')),
-        ],
+              child: const Text("Daftar"),
+            ),
+            TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventLogout());
+                },
+                child: const Text('Kembali ke login')),
+          ],
+        ),
       ),
     );
   }

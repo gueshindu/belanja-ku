@@ -24,11 +24,6 @@ void main() {
       child: const HalamanUtama(),
     ),
     routes: {
-      mainRoute: (context) => const HalamanUtama(),
-      loginRoute: (context) => const HalamanLogin(),
-      registerRoute: (context) => const HalamanDaftar(),
-      notesRoute: (context) => const HalamanNotes(),
-      verifyEmailRoute: (context) => const HalamanVerifikasi(),
       createOrUpdateRoute: (context) => const HalamanNewUpdate(),
       testRoute: (context) => const HalamanUtamaBloc(),
     },
@@ -49,9 +44,10 @@ class HalamanUtama extends StatelessWidget {
           return const HalamanVerifikasi();
         } else if (state is AuthStateLogout) {
           return const HalamanLogin();
-        } else if (state is AuthStateOnFailure) {
-          return Text("ERROR");
-        } else {
+        } else if (state is AuthStateRegistering ) {
+          return const HalamanDaftar();
+        }
+        else {
           return const Scaffold(
             body: CircularProgressIndicator(),
           );
