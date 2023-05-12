@@ -69,7 +69,7 @@ class _HalamanNotesState extends State<HalamanNotes> {
             case ConnectionState.active:
               if (snapshot.hasData) {
                 final notes = snapshot.data as Iterable<CloudNote>;
-                writeLog("List notes: ${notes.toString()}");
+                writeLog("List notes loaded ${notes.length.toString()}");
                 return NoteListView(
                   notes: notes,
                   onDeleteNote: (note) async {

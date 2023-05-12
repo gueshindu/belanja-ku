@@ -1,6 +1,7 @@
 import 'package:belanjaku/auth/auth_provider.dart';
 import 'package:belanjaku/bloc/auth/auth_event.dart';
 import 'package:belanjaku/bloc/auth/auth_state.dart';
+import 'package:belanjaku/constant/routes.dart';
 import 'package:bloc/bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -26,11 +27,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(const AuthStateLoading());
         final email = event.email;
         final pwd = event.pwd;
-
+        writeLog("Login user: $email");
         try {
           final user = await provider.login(email: email, passwd: pwd);
+          writeLog("Success");
           emit(AuthStateLogin(user));
         } on Exception catch (e) {
+          writeLog("Failed");
           emit(AuthStateOnFailure(e));
         }
       },

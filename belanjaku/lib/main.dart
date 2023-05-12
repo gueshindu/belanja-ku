@@ -49,6 +49,8 @@ class HalamanUtama extends StatelessWidget {
           return const HalamanVerifikasi();
         } else if (state is AuthStateLogout) {
           return const HalamanLogin();
+        } else if (state is AuthStateOnFailure) {
+          return Text("ERROR");
         } else {
           return const Scaffold(
             body: CircularProgressIndicator(),
