@@ -1,8 +1,10 @@
 import 'package:belanjaku/auth/auth_exception.dart';
+import 'package:belanjaku/bloc/auth/auth_bloc.dart';
+import 'package:belanjaku/bloc/auth/auth_event.dart';
 import 'package:belanjaku/constant/routes.dart';
-import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/utility/dialog/error_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HalamanLogin extends StatefulWidget {
   const HalamanLogin({Key? key}) : super(key: key);
@@ -60,9 +62,14 @@ class _HalamanLoginState extends State<HalamanLogin> {
             onPressed: () async {
               final myEmail = email.text;
               final myPwd = passwd.text;
-
               try {
-                await AuthService.firebase()
+                context.read<AuthBloc>().add(
+                      AuthEventLogin(
+                        myEmail,
+                        myPwd,
+                      ),
+                    );
+                /* await AuthService.firebase()
                     .login(email: myEmail, passwd: myPwd);
                 final userCred = AuthService.firebase().currentUser;
                 if (userCred?.isEmailVerified ?? false) {
@@ -77,7 +84,7 @@ class _HalamanLoginState extends State<HalamanLogin> {
                     verifyEmailRoute,
                     (route) => false,
                   );
-                }
+                } */
               } on UserNotFoundException {
                 await showErrorDialog(context, 'Pengguna tidak ditemukan');
               } on WrongPasswordException {

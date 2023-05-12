@@ -1,3 +1,5 @@
+import 'package:belanjaku/bloc/auth/auth_bloc.dart';
+import 'package:belanjaku/bloc/auth/auth_event.dart';
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/enums/menu_action.dart';
 import 'package:belanjaku/services/auth_service.dart';
@@ -6,6 +8,7 @@ import 'package:belanjaku/services/cloud/firebase_cloud_storage.dart';
 import 'package:belanjaku/utility/dialog/logout_dialog.dart';
 import 'package:belanjaku/views/notes/note_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HalamanNotes extends StatefulWidget {
   const HalamanNotes({Key? key}) : super(key: key);
@@ -42,13 +45,9 @@ class _HalamanNotesState extends State<HalamanNotes> {
               case MenuAction.logout:
                 final shouldLogout = await showLogoutDialog(context);
                 if (shouldLogout) {
-                  writeLog('User logout');
-
-                  await AuthService.firebase().logOut();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    loginRoute,
-                    (_) => false,
-                  );
+                  context.read<AuthBloc>().add(
+                        const AuthEventLogout(),
+                      );
                 }
                 break;
             }

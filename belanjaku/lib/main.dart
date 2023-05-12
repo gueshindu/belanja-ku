@@ -1,6 +1,9 @@
-import 'package:belanjaku/bloc/main_bloc.dart';
+import 'package:belanjaku/auth/auth_firebase.dart';
+import 'package:belanjaku/bloc/auth/auth_bloc.dart';
+import 'package:belanjaku/bloc/auth/auth_event.dart';
+import 'package:belanjaku/bloc/auth/auth_state.dart';
+import 'package:belanjaku/bloc/view_test_bloc.dart';
 import 'package:belanjaku/constant/routes.dart';
-import 'package:belanjaku/services/auth_service.dart';
 import 'package:belanjaku/views/halaman_login.dart';
 import 'package:belanjaku/views/notes/halaman_note.dart';
 import 'package:belanjaku/views/halaman_register.dart';
@@ -16,7 +19,10 @@ void main() {
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
-    home: const HalamanUtama(),
+    home: BlocProvider<AuthBloc>(
+      create: (context) => AuthBloc(AuthFirebaseProvider()),
+      child: const HalamanUtama(),
+    ),
     routes: {
       mainRoute: (context) => const HalamanUtama(),
       loginRoute: (context) => const HalamanLogin(),
@@ -24,15 +30,33 @@ void main() {
       notesRoute: (context) => const HalamanNotes(),
       verifyEmailRoute: (context) => const HalamanVerifikasi(),
       createOrUpdateRoute: (context) => const HalamanNewUpdate(),
+      testRoute: (context) => const HalamanUtamaBloc(),
     },
   ));
 }
-/* 
+
 class HalamanUtama extends StatelessWidget {
   const HalamanUtama({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    context.read<AuthBloc>().add(const AuthEventInit());
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthStateLogin) {
+          return const HalamanNotes();
+        } else if (state is AuthStateVerification) {
+          return const HalamanVerifikasi();
+        } else if (state is AuthStateLogout) {
+          return const HalamanLogin();
+        } else {
+          return const Scaffold(
+            body: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+/* 
     return FutureBuilder(
       future: AuthService.firebase().initialize(),
       builder: (context, snapshot) {
@@ -53,84 +77,6 @@ class HalamanUtama extends StatelessWidget {
             return const CircularProgressIndicator();
         }
       },
-    );
-  }
-} */
-
-class HalamanUtama extends StatefulWidget {
-  const HalamanUtama({Key? key}) : super(key: key);
-
-  @override
-  State<HalamanUtama> createState() => _HalamanUtamaState();
-}
-
-class _HalamanUtamaState extends State<HalamanUtama> {
-  late final TextEditingController _txtCtrl;
-
-  @override
-  void initState() {
-    _txtCtrl = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _txtCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CounterBloc(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Ngetest bloc'),
-        ),
-        body: BlocConsumer<CounterBloc, BlocCounterState>(
-          builder: (context, state) {
-            final invalidValue =
-                (state is BlocCounterStateInvalid) ? state.invalidValue : '';
-            return Column(
-              children: [
-                Text('Nilai saat ini: ${state.value}'),
-                Visibility(
-                  visible: state is BlocCounterStateInvalid,
-                  child: Text('Input salah: $invalidValue'),
-                ),
-                TextField(
-                  controller: _txtCtrl,
-                  decoration: const InputDecoration(hintText: 'Masukkan nomor'),
-                  keyboardType: TextInputType.number,
-                ),
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        context
-                            .read<CounterBloc>()
-                            .add(BlocIncrementEvent(_txtCtrl.text));
-                      },
-                      child: const Icon(Icons.add),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        context
-                            .read<CounterBloc>()
-                            .add(BlocDecrementEvent(_txtCtrl.text));
-                      },
-                      child: const Icon(Icons.remove),
-                    ),
-                  ],
-                )
-              ],
-            );
-          },
-          listener: (context, state) {
-            _txtCtrl.clear();
-          },
-        ),
-      ),
-    );
+    ); */
   }
 }
