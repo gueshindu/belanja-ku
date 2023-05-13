@@ -20,7 +20,7 @@ class _HalamanLoginState extends State<HalamanLogin> {
   late final TextEditingController email;
   late final TextEditingController passwd;
 
-  CloseDialog? _closeDialogHandle; 
+  //CloseDialog? _closeDialogHandle;
 
   @override
   void initState() {
@@ -39,24 +39,15 @@ class _HalamanLoginState extends State<HalamanLogin> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state)  async{
+      listener: (context, state) async {
         if (state is AuthStateLogout) {
-
-final closeDialog = _closeDialogHandle;
-if (!state.isLoading && closeDialog != null ) {
-  closeDialog();
-  _closeDialogHandle = null;
-}else if (state.isLoading && closeDialog ==null) {
-  _closeDialogHandle = showLoadingDialog(context: context, txt: "Membuka aplikasi....",);
-}
-
-                  if (state.exception is UserNotFoundException ||
-                      state.exception is WrongPasswordException) {
-                    await showErrorDialog(context, 'Pengguna tidak berhak masuk');
-                  } else if (state.exception is GenericAuthException) {
-                    await showErrorDialog(context, 'Terjadi kesalahan pada aplikasi');
-                  }
-                }
+          if (state.exception is UserNotFoundException ||
+              state.exception is WrongPasswordException) {
+            await showErrorDialog(context, 'Pengguna tidak berhak masuk');
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(context, 'Terjadi kesalahan pada aplikasi');
+          }
+        }
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Login')),
@@ -98,13 +89,8 @@ if (!state.isLoading && closeDialog != null ) {
               child: const Text("Masuk"),
             ),
             TextButton(
-                onPressed: ()   {
-                  context.read<AuthBloc>().add(const AuthEventShouldRegister()); 
-                  
-                 /*  Navigator.of(context).pushNamedAndRemoveUntil(
-                    registerRoute,
-                    (route) => false,
-                  ); */
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventShouldRegister());
                 },
                 child: const Text('Belum punya akun? Daftar gratis'))
           ],
