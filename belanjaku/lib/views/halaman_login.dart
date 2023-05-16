@@ -43,7 +43,7 @@ class _HalamanLoginState extends State<HalamanLogin> {
         if (state is AuthStateLogout) {
           if (state.exception is UserNotFoundException ||
               state.exception is WrongPasswordException) {
-            await showErrorDialog(context, 'Pengguna tidak berhak masuk');
+            await showErrorDialog(context, 'Email atau password tidak sesuai');
           } else if (state.exception is GenericAuthException) {
             await showErrorDialog(context, 'Terjadi kesalahan pada aplikasi');
           }
@@ -51,49 +51,60 @@ class _HalamanLoginState extends State<HalamanLogin> {
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Login')),
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 7,
-            ),
-            const Text("Login"),
-            const SizedBox(
-              height: 7,
-            ),
-            TextField(
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              enableSuggestions: true,
-              decoration:
-                  const InputDecoration(hintText: 'Masukkan email Anda'),
-              controller: email,
-            ),
-            TextField(
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'Password Aplikasi'),
-              controller: passwd,
-            ),
-            TextButton(
-              onPressed: () async {
-                final myEmail = email.text;
-                final myPwd = passwd.text;
-                context.read<AuthBloc>().add(
-                      AuthEventLogin(
-                        myEmail,
-                        myPwd,
-                      ),
-                    );
-              },
-              child: const Text("Masuk"),
-            ),
-            TextButton(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 7,
+              ),
+              const Text("Masuk aplikasi dengan email dan password"),
+              const SizedBox(
+                height: 7,
+              ),
+              TextField(
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: true,
+                decoration:
+                    const InputDecoration(hintText: 'Masukkan email Anda'),
+                controller: email,
+              ),
+              TextField(
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration:
+                    const InputDecoration(hintText: 'Password Aplikasi'),
+                controller: passwd,
+              ),
+              TextButton(
+                onPressed: () async {
+                  final myEmail = email.text;
+                  final myPwd = passwd.text;
+                  context.read<AuthBloc>().add(
+                        AuthEventLogin(
+                          myEmail,
+                          myPwd,
+                        ),
+                      );
+                },
+                child: const Text("Masuk"),
+              ),
+              TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(const AuthEventShouldRegister());
                 },
-                child: const Text('Belum punya akun? Daftar gratis'))
-          ],
+                child: const Text('Belum punya akun? Daftar gratis'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(const AuthEventForgotPassword());
+                },
+                child: const Text('Lupa password'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -52,37 +52,53 @@ class _HalamanDaftarState extends State<HalamanDaftar> {
         appBar: AppBar(
           title: const Text("Daftar Pengguna Baru"),
         ),
-        body: Column(
-          children: [
-            TextField(
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              enableSuggestions: true,
-              decoration:
-                  const InputDecoration(hintText: 'Masukkan email Anda'),
-              controller: email,
-            ),
-            TextField(
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'Password Aplikasi'),
-              controller: passwd,
-            ),
-            TextButton(
-              onPressed: () async {
-                final eml = email.text;
-                final pwd = passwd.text;
-                context.read<AuthBloc>().add(AuthEventRegister(eml, pwd));
-              },
-              child: const Text("Daftar"),
-            ),
-            TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(const AuthEventLogout());
-                },
-                child: const Text('Kembali ke login')),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Masukkan email dan password baru'),
+              TextField(
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: true,
+                autofocus: true,
+                decoration:
+                    const InputDecoration(hintText: 'Masukkan email Anda'),
+                controller: email,
+              ),
+              TextField(
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration:
+                    const InputDecoration(hintText: 'Password Aplikasi'),
+                controller: passwd,
+              ),
+              Center(
+                child: Column(
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        final eml = email.text;
+                        final pwd = passwd.text;
+                        context
+                            .read<AuthBloc>()
+                            .add(AuthEventRegister(eml, pwd));
+                      },
+                      child: const Text("Daftar"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(const AuthEventLogout());
+                      },
+                      child: const Text('Kembali ke login'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

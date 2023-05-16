@@ -14,4 +14,7 @@ abstract class AuthProvider {
   });
   Future logOut();
   Future sentEmailVerification();
+  Future passwordReset({
+    required String email,
+  });
 }

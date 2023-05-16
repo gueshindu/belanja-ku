@@ -7,14 +7,44 @@ import 'package:bloc/bloc.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthProvider provider)
       : super(const AuthStateUninitialized(isLoading: true)) {
+    //Reset password
+    on<AuthEventForgotPassword>(
+      (event, emit) async {
+        emit(const AuthStateForgotPassword(
+            exception: null, hasSentEmail: false, isLoading: false));
+        final email = event.email;
+
+        if (email == null) {
+          return;
+        }
+
+        //User ingin rest password
+        emit(const AuthStateForgotPassword(
+            exception: null, hasSentEmail: false, isLoading: true));
+
+        bool isSent;
+        Exception? optException;
+        try {
+          await provider.passwordReset(email: email);
+          isSent = true;
+          optException = null;
+        } on Exception catch (e) {
+          isSent = false;
+          optException = e;
+        }
+
+        emit(AuthStateForgotPassword(
+            exception: optException, hasSentEmail: isSent, isLoading: false));
+      },
+    );
 
     //Membuka Halaman Register
-    on <AuthEventShouldRegister>(
+    on<AuthEventShouldRegister>(
       (event, emit) {
         emit(const AuthStateRegistering(exception: null, isLoading: false));
       },
     );
-    
+
     //Kirim email verifikasi
     on<AuthEventSendEmailVerification>(
       (event, emit) async {

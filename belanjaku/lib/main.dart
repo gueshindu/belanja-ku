@@ -6,6 +6,7 @@ import 'package:belanjaku/bloc/view_test_bloc.dart';
 import 'package:belanjaku/constant/routes.dart';
 import 'package:belanjaku/helper/loading_screen.dart';
 import 'package:belanjaku/views/halaman_login.dart';
+import 'package:belanjaku/views/halaman_lupa_password.dart';
 import 'package:belanjaku/views/notes/halaman_note.dart';
 import 'package:belanjaku/views/halaman_register.dart';
 import 'package:belanjaku/views/halaman_verifikasi.dart';
@@ -48,42 +49,23 @@ class HalamanUtama extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        writeLog('State: ${state.toString()}');
+
         if (state is AuthStateLogin) {
           return const HalamanNotes();
-        } else if (state is AuthStateVerification) {
+        } else if (state is AuthStateVerification ||
+            state is AuthStateNeedVerification) {
           return const HalamanVerifikasi();
         } else if (state is AuthStateLogout) {
           return const HalamanLogin();
+        } else if (state is AuthStateForgotPassword) {
+          return const HalamanLupaPassword();
         } else if (state is AuthStateRegistering) {
           return const HalamanDaftar();
         } else {
-          return const Scaffold(
-            body: CircularProgressIndicator(),
-          );
+          return const CircularProgressIndicator();
         }
       },
     );
-/* 
-    return FutureBuilder(
-      future: AuthService.firebase().initialize(),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            final user = AuthService.firebase().currentUser;
-            if (user != null) {
-              if (user.isEmailVerified) {
-                writeLog("Logged & verified");
-              } else {
-                return const HalamanVerifikasi();
-              }
-            } else {
-              return const HalamanLogin();
-            }
-            return const HalamanNotes();
-          default:
-            return const CircularProgressIndicator();
-        }
-      },
-    ); */
   }
 }
