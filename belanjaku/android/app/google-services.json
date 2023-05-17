@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "953258127316",
+    "project_id": "belanjaku-9f2c9",
+    "storage_bucket": "belanjaku-9f2c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953258127316:android:793b76a93e41a5378d3041",
+        "android_client_info": {
+          "package_name": "com.gue.shindu.belanjaku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953258127316-u6sj4ot7qguv4k83rrgbr75tan5iqt6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI0WVw2tHLfSwcrYicgJ-kF6D8Nm8CPOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953258127316-u6sj4ot7qguv4k83rrgbr75tan5iqt6b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "953258127316-air9rtm5h8e32q56jp0dsheu40dh2l9v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gue.shindu.belanjaku"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
