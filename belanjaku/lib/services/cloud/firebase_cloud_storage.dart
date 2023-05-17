@@ -23,9 +23,12 @@ class FireBaseCloudStorage {
   }
 
   Stream<Iterable<CloudNote>> allNotes({required String ownerId}) {
-    return notes.snapshots().map((event) => event.docs
-        .map((doc) => CloudNote.fromSnapshot(doc))
-        .where((note) => note.ownerUserId == ownerId));
+    final allNotes = notes
+        .where(userIdField, isEqualTo: ownerId)
+        .snapshots()
+        .map((event) => event.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+
+    return allNotes;
   }
 
   Future<Iterable<CloudNote>> getNotes({required String ownerId}) async {
