@@ -92,7 +92,7 @@ class AuthFirebaseProvider implements AuthProvider {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
-
+  
   @override
   Future passwordReset({required String email}) async {
     try {
